@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #0b0d0e;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Merienda', cursive;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .tracker-card {
+            background: rgba(20, 25, 28, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 3rem 3rem 2rem 2rem;
+            padding: 2.5rem 2.8rem;
+            max-width: 860px;
+            width: 100%;
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.85),
+                inset 0 1px 1px rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .heading-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 0.9rem;
+        }
+
+        .icon-badge {
+            background: #2e3b3e;
+            padding: 0.6rem 0.9rem;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            color: #b9e6e0;
+            box-shadow: 0 0 12px rgba(90, 200, 190, 0.15);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typewriter-container {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .Note1 {
+            font-size: clamp(1.4rem, 5.5vw, 2.5rem);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            color: #f0f9f8;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #b9e6e0;
+            width: 0;
+            animation:
+                typing 3.2s steps(28, end) forwards,
+                blink-caret 0.7s step-end infinite;
+            text-shadow: 0 0 12px rgba(120, 220, 210, 0.2);
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: #b9e6e0;
+            }
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0 2.2rem 0;
+            justify-content: space-between;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 0.9rem 1.8rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            flex: 1 1 auto;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-item i {
+            font-size: 1.5rem;
+            color: #b9e6e0;
+            width: 2rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #8b9b9e;
+            font-weight: 300;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #eef7f5;
+            line-height: 1.2;
+        }
+
+        .stat-value.income {
+            color: #9de0d6;
+        }
+
+        .stat-value.expense {
+            color: #f7b2a1;
+        }
+
+        .stat-value.balance {
+            color: #d4e9e5;
+        }
+
+        .entry-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 0.6rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1.5rem 1.2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .entry-form input,
+        .entry-form select {
+            background: #1a2124;
+            border: 1px solid #2b363a;
+            border-radius: 40px;
+            padding: 0.7rem 1.2rem;
+            font-family: 'Merienda', cursive;
+            font-size: 0.9rem;
+            color: #e2edeb;
+            outline: none;
+            transition: 0.15s;
+            flex: 1 1 120px;
+            min-width: 100px;
+        }
+
+        .entry-form input:focus,
+        .entry-form select:focus {
+            border-color: #79cbc1;
+            box-shadow: 0 0 0 3px rgba(90, 200, 190, 0.2);
+            background: #1f292d;
+        }
+
+        .entry-form input::placeholder {
+            color: #6b7f82;
+            font-weight: 300;
+            font-size: 0.8rem;
+        }
+
+        .entry-form button {
+            background: #68bdb3;
+            border: none;
+            border-radius: 60px;
+            padding: 0.7rem 1.8rem;
+            font-family: 'Merienda', cursive;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0b1416;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(90, 200, 190, 0.25);
+            flex: 0 1 auto;
+            letter-spacing: 0.3px;
+        }
+
+        .entry-form button:hover {
+            background: #8cd9cf;
+            transform: scale(1.01);
+            box-shadow: 0 6px 16px rgba(90, 200, 190, 0.4);
+        }
+
+        .entry-form button:active {
+            transform: scale(0.96);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            color: #819799;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 0 0.4rem 0.4rem 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 0.2rem;
+        }
+
+        .transaction-list {
+            list-style: none;
+            margin-top: 0.6rem;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 0.2rem;
+        }
+
+        .transaction-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .transaction-list::-webkit-scrollbar-track {
+            background: #181f22;
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: #3f595b;
+            border-radius: 10px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            padding: 0.65rem 1rem;
+            border-radius: 50px;
+            margin-bottom: 0.45rem;
+            border-left: 3px solid transparent;
+            transition: 0.12s;
+            font-size: 0.95rem;
+        }
+
+        .transaction-item.income-item {
+            border-left-color: #6fcbc0;
+        }
+
+        .transaction-item.expense-item {
+            border-left-color: #e8947e;
+        }
+
+        .tx-desc {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex: 2;
+        }
+
+        .tx-desc i {
+            width: 1.6rem;
+            font-size: 1rem;
+            color: #8ba9a6;
+        }
+
+        .tx-name {
+            font-weight: 400;
+            color: #dfece9;
+            letter-spacing: 0.2px;
+        }
+
+        .tx-amount {
+            font-weight: 500;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .tx-amount.positive {
+            color: #8ed9ce;
+        }
+
+        .tx-amount.negative {
+            color: #f5b09b;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #5e7375;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 40px;
+            transition: 0.15s;
+            opacity: 0.5;
+        }
+
+        .delete-btn:hover {
+            color: #f7a692;
+            opacity: 1;
+            background: rgba(200, 80, 70, 0.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #4d6366;
+            padding: 1.8rem 0.2rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .empty-state i {
+            font-size: 1.7rem;
+            margin-bottom: 0.3rem;
+            display: block;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 600px) {
+            .tracker-card {
+                padding: 1.8rem 1.2rem;
+            }
+
+            .entry-form {
+                border-radius: 30px;
+                padding: 1rem;
+            }
+
+            .stat-item {
+                padding: 0.6rem 1rem;
+                min-width: 80px;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .Note1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        .storage-hint {
+            text-align: right;
+            font-size: 0.6rem;
+            color: #384b4d;
+            margin-top: 0.5rem;
+            letter-spacing: 0.3px;
+            opacity: 0.4;
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .storage-hint:hover {
+            opacity: 0.8;
+        }
+
+        .storage-hint i {
+            margin-right: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tracker-card">
+
+        <div class="heading-wrapper">
+            <span class="icon-badge"><i class="fas fa-wallet"></i></span>
+            <div class="typewriter-container">
+                <h1 class="Note1">Expense Tracker</h1>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <i class="fas fa-arrow-up"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Income</span>
+                    <span class="stat-value income" id="totalIncome">$0</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-arrow-down"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Expense</span>
+                    <span class="stat-value expense" id="totalExpense">$0</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-coins"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Balance</span>
+                    <span class="stat-value balance" id="balance">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="entry-form" id="expenseForm">
+            <input type="text" id="descInput" placeholder="Description (e.g. Coffee)" required>
+            <input type="number" id="amountInput" placeholder="Amount ($)" step="0.01" min="0.01" required>
+            <select id="typeSelect">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <button type="submit"><i class="fas fa-plus-circle"></i> Add</button>
+        </form>
+
+        <div class="list-header">
+            <span><i class="far fa-list-alt" style="margin-right: 6px;"></i>Recent</span>
+            <span style="font-size:0.7rem; opacity:0.5;">click <i class="fas fa-trash-alt" style="margin:0 3px;"></i> to
+                remove</span>
+        </div>
+        <ul class="transaction-list" id="transactionList">
+            <li class="empty-state"><i class="fas fa-receipt"></i> No transactions yet</li>
+        </ul>
+
+        <div class="storage-hint"><i class="fas fa-database"></i> saved in your browser</div>
+    </div>
+
+    <script>
+        (function () {
+            let transactions = [];
+
+            const form = document.getElementById('expenseForm');
+            const descInput = document.getElementById('descInput');
+            const amountInput = document.getElementById('amountInput');
+            const typeSelect = document.getElementById('typeSelect');
+            const listEl = document.getElementById('transactionList');
+            const totalIncomeEl = document.getElementById('totalIncome');
+            const totalExpenseEl = document.getElementById('totalExpense');
+            const balanceEl = document.getElementById('balance');
+
+            const STORAGE_KEY = 'perfect_expense_tracker_data';
+
+            function formatCurrency(value) {
+                return '$' + Number(value).toFixed(2);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function saveToStorage() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+                } catch (e) { }
+            }
+
+            function loadFromStorage() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            const valid = parsed.every(tx =>
+                                typeof tx === 'object' &&
+                                typeof tx.description === 'string' &&
+                                typeof tx.amount === 'number' &&
+                                (tx.type === 'income' || tx.type === 'expense')
+                            );
+                            if (valid) {
+                                transactions = parsed;
+                                return true;
+                            }
+                        }
+                    }
+                } catch (e) { }
+                return false;
+            }
+
+            function refreshUI() {
+                let income = 0, expense = 0;
+                transactions.forEach(tx => {
+                    if (tx.type === 'income') income += tx.amount;
+                    else expense += tx.amount;
+                });
+                const balance = income - expense;
+
+                totalIncomeEl.textContent = formatCurrency(income);
+                totalExpenseEl.textContent = formatCurrency(expense);
+                balanceEl.textContent = formatCurrency(balance);
+
+                if (transactions.length === 0) {
+                    listEl.innerHTML = `<li class="empty-state"><i class="fas fa-receipt"></i> No transactions yet</li>`;
+                    return;
+                }
+
+                const sorted = [...transactions].reverse();
+                let html = '';
+                sorted.forEach((tx, idx) => {
+                    const originalIndex = transactions.length - 1 - idx;
+                    const isIncome = tx.type === 'income';
+                    const sign = isIncome ? '+' : '-';
+                    const amountClass = isIncome ? 'positive' : 'negative';
+                    const itemClass = isIncome ? 'income-item' : 'expense-item';
+                    const icon = isIncome ? 'fa-arrow-up' : 'fa-arrow-down';
+
+                    html += `
+          <li class="transaction-item ${itemClass}" data-index="${originalIndex}">
+            <span class="tx-desc">
+              <i class="fas ${icon}"></i>
+              <span class="tx-name">${escapeHtml(tx.description)}</span>
+            </span>
+            <span class="tx-amount ${amountClass}">${sign}${formatCurrency(tx.amount)}</span>
+            <button class="delete-btn" data-index="${originalIndex}" aria-label="delete"><i class="fas fa-trash-alt"></i></button>
+          </li>
+        `;
+                });
+                listEl.innerHTML = html;
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const idx = parseInt(this.getAttribute('data-index'), 10);
+                        deleteTransaction(idx);
+                    });
+                });
+
+                saveToStorage();
+            }
+
+            function addTransaction(description, amount, type) {
+                const tx = {
+                    description: description.trim(),
+                    amount: amount,
+                    type: type
+                };
+                transactions.push(tx);
+                refreshUI();
+            }
+
+            function deleteTransaction(index) {
+                if (index >= 0 && index < transactions.length) {
+                    transactions.splice(index, 1);
+                    refreshUI();
+                }
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const desc = descInput.value.trim();
+                const amountRaw = amountInput.value.trim();
+                const type = typeSelect.value;
+
+                if (!desc) {
+                    alert('Please enter a description.');
+                    return;
+                }
+                if (!amountRaw) {
+                    alert('Please enter an amount.');
+                    return;
+                }
+                const amount = parseFloat(amountRaw);
+                if (isNaN(amount) || amount <= 0) {
+                    alert('Amount must be a positive number.');
+                    return;
+                }
+
+                addTransaction(desc, amount, type);
+
+                descInput.value = '';
+                amountInput.value = '';
+                descInput.focus();
+            });
+
+            function init() {
+                const hasStorage = loadFromStorage();
+                if (!hasStorage) {
+                    transactions = [];
+                    saveToStorage();
+                }
+                refreshUI();
+            }
+
+            init();
+        })();
+    </script>
+</body>
+
+</html>
